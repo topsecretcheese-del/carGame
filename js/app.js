@@ -296,6 +296,12 @@ function renderGarage() {
       refresh();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+    const race = h('button', { type: 'button', textContent: 'Race' });
+    race.addEventListener('click', () => {
+      design = sanitize(car.design);
+      persist();
+      window.location.href = 'race.html';
+    });
     const del = h('button', { type: 'button', textContent: 'Delete' });
     del.addEventListener('click', () => {
       garage.splice(i, 1);
@@ -308,7 +314,7 @@ function renderGarage() {
       h('span', { className: 'gstats', textContent:
         `${fmt.hp(r.engine.peakPower)} hp · ${accel ? accel.toFixed(1) : '—'} s ${metric() ? '0–100' : '0–60'} · ` +
         `${fmt.speed(r.topSpeed)} ${fmt.speedUnit()} · ${fmt.money(r.price)}` }),
-      h('span', { className: 'gbtns' }, load, del));
+      h('span', { className: 'gbtns' }, load, race, del));
   }));
 }
 
