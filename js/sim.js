@@ -103,15 +103,23 @@ function simulate(d) {
   const safetyPkg = SAFETY[d.safety];
   const engine = buildEngine(d);
 
+  // Add up the effects of the styling parts.
+  const style = { cd: 1, grip: 0, mass: 0, cost: 0, prestige: 0, comfort: 0, utility: 0 };
+  for (const [key, table] of Object.entries(STYLE_TABLES)) {
+    const part = table[d[key]];
+    style.cd *= part.cd ?? 1;
+    for (const k of ['grip', 'mass', 'cost', 'prestige', 'comfort', 'utility']) style[k] += part[k] ?? 0;
+  }
+
   const bodyMass = body.mass * mat.massMul;
   const mass = bodyMass + engine.mass + box.mass + drive.mass + susp.mass + brakes.mass +
-    interior.mass + safetyPkg.mass + (d.tireWidth - 195) * 0.12 * 4 + (d.rim - 15) * 1.5 * 4;
+    interior.mass + safetyPkg.mass + style.mass + (d.tireWidth - 195) * 0.12 * 4 + (d.rim - 15) * 1.5 * 4;
 
   const wheelRadius = d.rim * 0.0127 + d.tireWidth * 0.001 * (d.rim >= 18 ? 0.4 : 0.55);
   const widthGrip = 1 + (d.tireWidth - 205) / 1000;
   const mu = tire.mu * widthGrip;
   const rr = tire.rr * (1 + (d.tireWidth - 205) / 800);
-  const cdA = 1.12 * body.cd * body.area * (1 + (d.tireWidth - 205) / 2000);
+  const cdA = 1.12 * style.cd * body.cd * body.area * (1 + (d.tireWidth - 205) / 2000);
   const ratios = gearRatios(box);
   const eff = box.eff * (d.drivetrain === 'awd' ? 0.95 : 1);
 
@@ -171,7 +179,7 @@ function simulate(d) {
 
   // Handling and braking.
   const stiff = d.stiffness / 100;
-  const lateralG = 0.88 * mu * susp.grip * drive.handling * (0.92 + stiff * 0.1) * (1 - (mass - 1200) / 12000);
+  const lateralG = 0.88 * mu * susp.grip * drive.handling * (0.92 + stiff * 0.1) * (1 - (mass - 1200) / 12000) * (1 + style.grip);
   const brakeG = Math.min(mu * 1.05, brakes.decel);
   const braking100 = (100 / 3.6) ** 2 / (2 * brakeG * G);
 
@@ -187,11 +195,11 @@ function simulate(d) {
 
   const cost = body.cost * mat.costMul + engine.cost + box.cost + drive.cost + susp.cost +
     tire.cost * (1 + (d.tireWidth - 205) / 250 + (d.rim - 15) / 10) + brakes.cost +
-    interior.cost + safetyPkg.cost + 2500; // assembly
+    interior.cost + safetyPkg.cost + style.cost + 2500; // assembly
   const price = Math.round((cost * 1.35) / 50) * 50;
 
   const comfort = clamp(susp.comfort * (1.25 - stiff * 0.5) + interior.comfort + box.comfort + tire.comfort +
-    engine.smoothness * 0.12 - (d.rim - 16) * 3 - (body.name === 'Roadster' ? 8 : 0), 0, 100);
+    engine.smoothness * 0.12 + style.comfort - (d.rim - 16) * 3 - (body.name === 'Roadster' ? 8 : 0), 0, 100);
   const reliability = clamp(engine.reliability * 0.7 + 25 + mat.reliability - (d.drivetrain === 'awd' ? 4 : 0) -
     (d.gearbox === 'dct' ? 5 : 0), 0, 100);
 
@@ -203,8 +211,8 @@ function simulate(d) {
     practicality: clamp(body.seats * 9 + body.cargo * 45, 0, 100),
     reliability,
     safety: clamp(safetyPkg.safety + (brakeG - 0.9) * 30 + (mass - 1100) / 60, 0, 100),
-    prestige: clamp(interior.prestige + mat.prestige + LAYOUTS[d.layout].cyl * 3 + (engine.peakPower > 250 ? 12 : 0), 0, 100),
-    utility: clamp(body.utility * 55 + susp.utility * 20 + (d.drivetrain === 'awd' ? 15 : 0) + engine.peakTorque / 25, 0, 100),
+    prestige: clamp(interior.prestige + mat.prestige + style.prestige + LAYOUTS[d.layout].cyl * 3 + (engine.peakPower > 250 ? 12 : 0), 0, 100),
+    utility: clamp(body.utility * 55 + style.utility + susp.utility * 20 + (d.drivetrain === 'awd' ? 15 : 0) + engine.peakTorque / 25, 0, 100),
     affordability: score(price, 80000, 10000),
   };
 
@@ -219,6 +227,6 @@ function simulate(d) {
     engine, mass, wheelRadius, ratios,
     t60, t100, t160, tQuarter, vQuarter, topSpeed, topRpm,
     lateralG, brakeG, braking100, economy,
-    cost, price, ratings, segments,
+    cost, price, ratings, segments, style,
   };
 }

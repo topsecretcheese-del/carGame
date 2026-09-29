@@ -111,6 +111,76 @@ const SAFETY = {
   advanced: { name: 'Advanced (crumple zones, stability control)', mass: 45, cost: 1800, safety: 90 },
 };
 
+// Styling parts. Most are cosmetic; some change aero (cd multiplier), grip (added fraction),
+// mass, cost, prestige, comfort or utility.
+const HEADLIGHTS = {
+  square: { name: 'Rectangular', cost: 0 },
+  round:  { name: 'Round',       cost: 0,   prestige: 2 },
+  slim:   { name: 'Slim LED',    cost: 450, prestige: 6 },
+  popup:  { name: 'Pop-up',      cost: 350, prestige: 4, mass: 6 },
+};
+const GRILLES = {
+  slats: { name: 'Horizontal slats', cost: 0 },
+  mesh:  { name: 'Mesh',             cost: 120, prestige: 2 },
+  big:   { name: 'Big chrome',       cost: 300, prestige: 5, cd: 1.01 },
+  clean: { name: 'Grille-less',      cost: 80,  prestige: 3, cd: 0.99 },
+};
+const WHEEL_STYLES = {
+  fiveSpoke:  { name: 'Five-spoke',     cost: 0 },
+  multiSpoke: { name: 'Multi-spoke',    cost: 250, prestige: 3 },
+  mesh:       { name: 'Cross-mesh',     cost: 500, prestige: 6 },
+  steel:      { name: 'Steel with hubcap', cost: -200, prestige: -6, mass: 8 },
+  dish:       { name: 'Turbofan dish',  cost: 350, prestige: 4, cd: 0.995 },
+};
+const RIM_FINISHES = {
+  silver: { name: 'Silver', cost: 0,   color: 0xc9cdd3, metal: 1,   rough: 0.22, css: '#c9cdd3' },
+  black:  { name: 'Gloss black', cost: 100, color: 0x1a1a1d, metal: 0.6, rough: 0.3,  css: '#2a2a2e' },
+  gold:   { name: 'Gold',   cost: 250, color: 0xc9a13b, metal: 1,   rough: 0.25, css: '#c9a13b', prestige: 2 },
+  bronze: { name: 'Bronze', cost: 200, color: 0x8a6a3e, metal: 1,   rough: 0.3,  css: '#8a6a3e' },
+  chrome: { name: 'Chrome', cost: 400, color: 0xf2f2f2, metal: 1,   rough: 0.04, css: '#e6e8ea', prestige: 3 },
+};
+const SPOILERS = {
+  none:     { name: 'None',       cost: 0 },
+  lip:      { name: 'Lip spoiler', cost: 150,  grip: 0.005 },
+  ducktail: { name: 'Ducktail',   cost: 320,  grip: 0.01,  cd: 1.01 },
+  wing:     { name: 'Rear wing',  cost: 900,  grip: 0.03,  cd: 1.05, mass: 5,  prestige: 2 },
+  bigWing:  { name: 'Race wing',  cost: 1800, grip: 0.055, cd: 1.1,  mass: 9,  prestige: 3, comfort: -2 },
+};
+const HOODS = {
+  flat:  { name: 'Flat',          cost: 0 },
+  bulge: { name: 'Power bulge',   cost: 150, prestige: 2 },
+  scoop: { name: 'Hood scoop',    cost: 300, prestige: 3, cd: 1.01 },
+  vents: { name: 'Heat vents',    cost: 400, prestige: 3 },
+};
+const STRIPES = {
+  none: { name: 'None',             cost: 0 },
+  twin: { name: 'Twin racing stripes', cost: 350, prestige: 2 },
+  side: { name: 'Side stripe',      cost: 250 },
+  both: { name: 'Racing and side',  cost: 550, prestige: 2 },
+};
+const TINTS = {
+  clear: { name: 'Clear',       cost: 0 },
+  light: { name: 'Light tint',  cost: 120, comfort: 1 },
+  dark:  { name: 'Dark tint',   cost: 200, comfort: 2, prestige: 1 },
+};
+const ROOFS = {
+  body:    { name: 'Body colour',   cost: 0 },
+  black:   { name: 'Contrast black', cost: 250, prestige: 2 },
+  sunroof: { name: 'Sunroof',       cost: 700, comfort: 4, prestige: 3, mass: 16 },
+  rack:    { name: 'Roof rack',     cost: 300, utility: 10, cd: 1.06, mass: 12, prestige: -2 },
+};
+const BODYKITS = {
+  stock:  { name: 'Stock',                 cost: 0 },
+  skirts: { name: 'Side skirts and splitter', cost: 700, grip: 0.012, cd: 0.985, mass: 6, prestige: 3, comfort: -1 },
+  rally:  { name: 'Rally mud flaps and guards', cost: 400, utility: 6, mass: 8, cd: 1.02 },
+};
+
+// Design fields that pick a styling part, and the table each one draws from.
+const STYLE_TABLES = {
+  headlights: HEADLIGHTS, grille: GRILLES, wheelStyle: WHEEL_STYLES, rimFinish: RIM_FINISHES,
+  spoiler: SPOILERS, hood: HOODS, stripes: STRIPES, tint: TINTS, roof: ROOFS, bodykit: BODYKITS,
+};
+
 // Market segments and how much each cares about each rating (weights sum to 1).
 const SEGMENTS = {
   commuter: { name: 'Commuter', weights: { economy: 0.35, affordability: 0.3, reliability: 0.15, practicality: 0.2 } },
@@ -147,6 +217,17 @@ const DEFAULT_DESIGN = {
   brakes: 'vented',
   interior: 'standard',
   safety: 'standard',
+  headlights: 'slim',
+  grille: 'mesh',
+  wheelStyle: 'fiveSpoke',
+  rimFinish: 'silver',
+  spoiler: 'ducktail',
+  hood: 'flat',
+  stripes: 'twin',
+  stripeColor: '#f2f2f2',
+  tint: 'light',
+  roof: 'body',
+  bodykit: 'stock',
 };
 
 // Side profiles: x runs rear (0) to front (1); y runs from the sill (0) to the roof (1).

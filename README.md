@@ -10,7 +10,10 @@ Open `index.html` in a browser. No build step or install needed.
 
 ## What you can design
 
-- **Body:** style (hatchback, sedan, wagon, coupe, roadster, SUV, pickup), chassis material, paint.
+- **Body:** style (hatchback, sedan, wagon, coupe, roadster, SUV, pickup), chassis material.
+- **Style:** paint, headlights, grille, hood, wheel design and finish, spoiler, stripes and stripe
+  colour, window tint, roof and body kit. Some parts change the figures too: wings and skirts add
+  grip, scoops, racks and big wings add drag, and every part has a cost and prestige effect.
 - **Engine:** cylinder layout, block material, valvetrain, fuel system, turbocharging and boost,
   bore and stroke, compression, cam profile, rev limit.
 - **Drivetrain:** driven wheels, gearbox, final drive ratio.
@@ -20,8 +23,8 @@ Open `index.html` in a browser. No build step or install needed.
 ## 3D viewer
 
 The car is shown in 3D (three.js, loaded from a CDN). Drag to rotate, scroll or pinch to zoom,
-or pick a camera angle. Body style, paint, wheel and tyre size, ride height, brakes, exhaust
-count and rear wing all update live. If WebGL isn't available it falls back to a 2D side drawing,
+or pick a camera angle. The body, every styling part, wheel and tyre size, ride height, brakes
+and exhaust count all update live. If WebGL isn't available it falls back to a 2D side drawing,
 which you can also switch to with the "2D drawing" button.
 
 ## What it calculates

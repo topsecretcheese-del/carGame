@@ -4,6 +4,7 @@ const TABLES = {
   body: BODIES, material: MATERIALS, layout: LAYOUTS, block: BLOCKS, head: HEADS,
   fuel: FUEL_SYSTEMS, aspiration: ASPIRATIONS, gearbox: GEARBOXES, drivetrain: DRIVETRAINS,
   suspension: SUSPENSIONS, tires: TIRES, brakes: BRAKES, interior: INTERIORS, safety: SAFETY,
+  ...STYLE_TABLES,
 };
 
 // ---------------------------------------------------------------------------
@@ -60,11 +61,39 @@ const fmt = {
 const select = (key, label, extra = {}) => ({ type: 'select', key, label, ...extra });
 const range = (key, label, min, max, step, format, extra = {}) => ({ type: 'range', key, label, min, max, step, format, ...extra });
 
+// Describes what a styling part does beyond its looks, e.g. "+3% grip · +5% drag · +$900".
+function partEffects(part) {
+  const bits = [];
+  if (part.grip) bits.push(`+${Math.round(part.grip * 1000) / 10}% grip`);
+  if (part.cd && part.cd !== 1) bits.push(`${part.cd > 1 ? '+' : '−'}${Math.round(Math.abs(part.cd - 1) * 1000) / 10}% drag`);
+  if (part.mass) bits.push(`${part.mass > 0 ? '+' : '−'}${fmt.mass(Math.abs(part.mass))} ${fmt.massUnit()}`);
+  if (part.comfort) bits.push(`${part.comfort > 0 ? '+' : '−'}${Math.abs(part.comfort)} comfort`);
+  if (part.utility) bits.push(`+${part.utility} utility`);
+  if (part.prestige) bits.push(`${part.prestige > 0 ? '+' : '−'}${Math.abs(part.prestige)} prestige`);
+  if (part.cost) bits.push(`${part.cost > 0 ? '+' : '−'}${fmt.money(Math.abs(part.cost))}`);
+  return bits.length ? bits.join(' · ') : 'Looks only, no cost.';
+}
+const styleSelect = (key, label, extra = {}) =>
+  select(key, label, { hint: (d) => partEffects(STYLE_TABLES[key][d[key]]), ...extra });
+
 const TABS = [
   { id: 'body', label: 'Body', controls: [
     select('body', 'Body style', { hint: (d) => `${BODIES[d.body].seats} seats · drag coefficient ${BODIES[d.body].cd.toFixed(2)}` }),
     select('material', 'Chassis material', { hint: () => 'Lighter materials cost more but help every performance figure.' }),
+  ] },
+  { id: 'style', label: 'Style', controls: [
     { type: 'color', key: 'color', label: 'Paint' },
+    styleSelect('headlights', 'Headlights'),
+    styleSelect('grille', 'Grille'),
+    styleSelect('hood', 'Hood'),
+    styleSelect('wheelStyle', 'Wheel design'),
+    styleSelect('rimFinish', 'Wheel finish'),
+    styleSelect('spoiler', 'Spoiler'),
+    styleSelect('stripes', 'Stripes'),
+    { type: 'color', key: 'stripeColor', label: 'Stripe colour', show: (d) => d.stripes !== 'none' },
+    styleSelect('tint', 'Window tint'),
+    styleSelect('roof', 'Roof', { show: (d) => d.body !== 'roadster' }),
+    styleSelect('bodykit', 'Body kit'),
   ] },
   { id: 'engine', label: 'Engine', controls: [
     select('layout', 'Cylinder layout'),
@@ -346,7 +375,7 @@ function drawPreview() {
 
   // Glass and door line.
   path(prof.glass);
-  ctx.fillStyle = 'rgba(28, 40, 54, 0.85)';
+  ctx.fillStyle = { clear: 'rgba(90, 120, 140, 0.5)', light: 'rgba(28, 40, 54, 0.8)', dark: 'rgba(6, 8, 10, 0.95)' }[design.tint];
   ctx.fill();
   const [gx0] = P(prof.glass[0]), [gx1] = P(prof.glass[prof.glass.length - 1]);
   const doorX = (gx0 + gx1) / 2;
@@ -365,8 +394,8 @@ function drawPreview() {
   ctx.fillStyle = '#d2261a';
   ctx.fillRect(tx - 3, ty - 12, 10, 24);
 
-  // Rear wing for cars on semi-slicks.
-  if (design.tires === 'semi' && design.body !== 'pickup') {
+  // Rear wing.
+  if (design.spoiler === 'wing' || design.spoiler === 'bigWing') {
     const [wx, wy] = P([0.03, prof.body[1][1] + 0.04]);
     ctx.fillStyle = css('--ink');
     ctx.fillRect(wx + 18, wy - 34, 6, 34);
