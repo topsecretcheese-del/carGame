@@ -148,3 +148,40 @@ const DEFAULT_DESIGN = {
   interior: 'standard',
   safety: 'standard',
 };
+
+// Side profiles: x runs rear (0) to front (1); y runs from the sill (0) to the roof (1).
+// width, height and clearance are in metres. windshield and rearWindow index the body
+// points that bound the sloped glass (used by the 3D viewer).
+const PROFILES = {
+  hatch: { width: 1.72, height: 1.45, clearance: 0.16, windshield: [4, 5], rearWindow: [2, 3],
+    wheels: [0.16, 0.82],
+    body: [[0, 0], [0, 0.55], [0.04, 0.64], [0.1, 0.95], [0.55, 1], [0.72, 0.64], [0.96, 0.56], [1, 0.44], [1, 0]],
+    glass: [[0.12, 0.66], [0.16, 0.9], [0.54, 0.93], [0.68, 0.66]] },
+  sedan: { width: 1.8, height: 1.42, clearance: 0.15, windshield: [5, 6], rearWindow: [3, 4],
+    wheels: [0.18, 0.82],
+    body: [[0, 0], [0, 0.55], [0.03, 0.63], [0.2, 0.67], [0.3, 0.96], [0.58, 0.98], [0.72, 0.66], [0.97, 0.58], [1, 0.44], [1, 0]],
+    glass: [[0.24, 0.68], [0.32, 0.91], [0.57, 0.92], [0.68, 0.67]] },
+  wagon: { width: 1.8, height: 1.47, clearance: 0.15, windshield: [3, 4], rearWindow: [1, 2],
+    wheels: [0.17, 0.82],
+    body: [[0, 0], [0, 0.6], [0.03, 0.95], [0.58, 0.98], [0.72, 0.66], [0.97, 0.58], [1, 0.44], [1, 0]],
+    glass: [[0.05, 0.67], [0.06, 0.9], [0.57, 0.92], [0.68, 0.67]] },
+  coupe: { width: 1.84, height: 1.3, clearance: 0.12, windshield: [5, 6], rearWindow: [3, 4],
+    wheels: [0.18, 0.8],
+    body: [[0, 0], [0, 0.6], [0.05, 0.67], [0.22, 0.72], [0.38, 0.97], [0.55, 0.98], [0.7, 0.66], [0.97, 0.55], [1, 0.42], [1, 0]],
+    glass: [[0.28, 0.71], [0.39, 0.91], [0.54, 0.92], [0.65, 0.68]] },
+  roadster: { width: 1.76, height: 1.22, clearance: 0.12,
+    // An open car: the 3D body skips the windscreen fin and adds a separate screen.
+    body3d: [[0, 0], [0, 0.62], [0.06, 0.7], [0.6, 0.7], [0.97, 0.58], [1, 0.44], [1, 0]],
+    screen: [[0.6, 0.7], [0.51, 0.99]],
+    wheels: [0.18, 0.8],
+    body: [[0, 0], [0, 0.62], [0.06, 0.7], [0.44, 0.7], [0.5, 0.96], [0.53, 0.96], [0.6, 0.7], [0.97, 0.58], [1, 0.44], [1, 0]],
+    glass: [[0.475, 0.71], [0.51, 0.93], [0.525, 0.93], [0.565, 0.71]] },
+  suv: { width: 1.92, height: 1.75, clearance: 0.22, windshield: [3, 4], rearWindow: [1, 2],
+    wheels: [0.17, 0.82],
+    body: [[0, 0], [0, 0.62], [0.02, 0.95], [0.6, 0.98], [0.74, 0.66], [0.98, 0.6], [1, 0.45], [1, 0]],
+    glass: [[0.04, 0.68], [0.05, 0.9], [0.59, 0.92], [0.7, 0.68]] },
+  pickup: { width: 1.96, height: 1.8, clearance: 0.24, windshield: [4, 5], rearWindow: [2, 3],
+    wheels: [0.15, 0.8],
+    body: [[0, 0], [0, 0.6], [0.38, 0.6], [0.4, 0.97], [0.62, 0.97], [0.73, 0.66], [0.98, 0.6], [1, 0.45], [1, 0]],
+    glass: [[0.43, 0.67], [0.44, 0.9], [0.61, 0.9], [0.69, 0.67]] },
+};

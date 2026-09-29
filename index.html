@@ -32,7 +32,15 @@
   <main class="workspace">
     <section class="showroom" aria-label="Car preview and figures">
       <div class="preview-wrap">
-        <canvas id="preview" width="1280" height="520" aria-label="Side view of your car"></canvas>
+        <div id="viewer" class="viewer">
+          <canvas id="preview" width="1280" height="520" aria-label="Side view of your car"></canvas>
+          <div class="viewer-bar">
+            <div id="view-buttons" class="view-buttons" role="group" aria-label="Camera angle"></div>
+            <label class="spin"><input type="checkbox" id="auto-rotate"> Spin</label>
+            <button type="button" id="view-mode">2D drawing</button>
+          </div>
+          <p id="viewer-hint" class="viewer-hint">Drag to rotate · scroll to zoom</p>
+        </div>
         <p id="engine-summary" class="engine-summary"></p>
       </div>
       <dl id="figures" class="figures"></dl>
@@ -66,8 +74,10 @@
     </section>
   </main>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <script src="js/data.js"></script>
   <script src="js/sim.js"></script>
+  <script src="js/viewer3d.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -15,7 +15,7 @@ function loadStore() {
 }
 function persist() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ current: design, units, garage, tab: activeTab }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ current: design, units, garage, tab: activeTab, view: viewMode }));
   } catch { /* storage unavailable; the app still works for this session */ }
 }
 
@@ -37,6 +37,7 @@ let units = stored.units === 'imperial' ? 'imperial' : 'metric';
 let garage = Array.isArray(stored.garage) ? stored.garage.filter((c) => c && c.design) : [];
 let activeTab = stored.tab || 'body';
 let result = simulate(design);
+let viewMode = stored.view === '2d' ? '2d' : '3d';
 
 // ---------------------------------------------------------------------------
 // Unit formatting
@@ -113,7 +114,8 @@ const els = {
   metric: $('units-metric'), imperial: $('units-imperial'),
   tabs: $('tabs'), panel: $('panel'), figures: $('figures'), warnings: $('warnings'),
   summary: $('engine-summary'), segments: $('segments'), ratings: $('ratings'),
-  garage: $('garage-list'), preview: $('preview'), dyno: $('dyno'), torqueLegend: $('torque-legend'),
+  garage: $('garage-list'), preview: $('preview'), viewer: $('viewer'), viewButtons: $('view-buttons'),
+  autoRotate: $('auto-rotate'), viewModeBtn: $('view-mode'), viewerHint: $('viewer-hint'), dyno: $('dyno'), torqueLegend: $('torque-legend'),
 };
 let panelControls = [];
 
@@ -285,31 +287,6 @@ function renderGarage() {
 // Canvas drawing
 
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-
-// Side profiles: x runs rear (0) to front (1); y runs from the sill (0) to the roof (1).
-const PROFILES = {
-  hatch: { height: 1.45, clearance: 0.16, wheels: [0.16, 0.82],
-    body: [[0, 0], [0, 0.55], [0.04, 0.64], [0.1, 0.95], [0.55, 1], [0.72, 0.64], [0.96, 0.56], [1, 0.44], [1, 0]],
-    glass: [[0.12, 0.66], [0.16, 0.9], [0.54, 0.93], [0.68, 0.66]] },
-  sedan: { height: 1.42, clearance: 0.15, wheels: [0.18, 0.82],
-    body: [[0, 0], [0, 0.55], [0.03, 0.63], [0.2, 0.67], [0.3, 0.96], [0.58, 0.98], [0.72, 0.66], [0.97, 0.58], [1, 0.44], [1, 0]],
-    glass: [[0.24, 0.68], [0.32, 0.91], [0.57, 0.92], [0.68, 0.67]] },
-  wagon: { height: 1.47, clearance: 0.15, wheels: [0.17, 0.82],
-    body: [[0, 0], [0, 0.6], [0.03, 0.95], [0.58, 0.98], [0.72, 0.66], [0.97, 0.58], [1, 0.44], [1, 0]],
-    glass: [[0.05, 0.67], [0.06, 0.9], [0.57, 0.92], [0.68, 0.67]] },
-  coupe: { height: 1.3, clearance: 0.12, wheels: [0.18, 0.8],
-    body: [[0, 0], [0, 0.6], [0.05, 0.67], [0.22, 0.72], [0.38, 0.97], [0.55, 0.98], [0.7, 0.66], [0.97, 0.55], [1, 0.42], [1, 0]],
-    glass: [[0.28, 0.71], [0.39, 0.91], [0.54, 0.92], [0.65, 0.68]] },
-  roadster: { height: 1.22, clearance: 0.12, wheels: [0.18, 0.8],
-    body: [[0, 0], [0, 0.62], [0.06, 0.7], [0.44, 0.7], [0.5, 0.96], [0.53, 0.96], [0.6, 0.7], [0.97, 0.58], [1, 0.44], [1, 0]],
-    glass: [[0.475, 0.71], [0.51, 0.93], [0.525, 0.93], [0.565, 0.71]] },
-  suv: { height: 1.75, clearance: 0.22, wheels: [0.17, 0.82],
-    body: [[0, 0], [0, 0.62], [0.02, 0.95], [0.6, 0.98], [0.74, 0.66], [0.98, 0.6], [1, 0.45], [1, 0]],
-    glass: [[0.04, 0.68], [0.05, 0.9], [0.59, 0.92], [0.7, 0.68]] },
-  pickup: { height: 1.8, clearance: 0.24, wheels: [0.15, 0.8],
-    body: [[0, 0], [0, 0.6], [0.38, 0.6], [0.4, 0.97], [0.62, 0.97], [0.73, 0.66], [0.98, 0.6], [1, 0.45], [1, 0]],
-    glass: [[0.43, 0.67], [0.44, 0.9], [0.61, 0.9], [0.69, 0.67]] },
-};
 
 function drawPreview() {
   const cv = els.preview, ctx = cv.getContext('2d');
@@ -522,12 +499,51 @@ function drawDyno() {
 // ---------------------------------------------------------------------------
 // Wiring
 
+// ---------------------------------------------------------------------------
+// Preview: 3D viewer when available, otherwise the 2D side drawing
+
+const viewer = typeof createViewer === 'function' ? createViewer(els.viewer) : null;
+if (!viewer) viewMode = '2d';
+
+function renderPreview() {
+  if (viewMode === '3d') viewer.update(design, result);
+  else drawPreview();
+}
+
+function setViewMode(mode) {
+  viewMode = viewer ? mode : '2d';
+  const is3d = viewMode === '3d';
+  els.preview.hidden = is3d;
+  if (viewer) viewer.canvas.hidden = !is3d;
+  els.viewButtons.hidden = !is3d;
+  els.autoRotate.parentElement.hidden = !is3d;
+  els.viewerHint.hidden = !is3d;
+  els.viewModeBtn.hidden = !viewer;
+  els.viewModeBtn.textContent = is3d ? '2D drawing' : '3D view';
+  renderPreview();
+  if (viewer && is3d) viewer.resize();
+  persist();
+}
+
+if (viewer) {
+  const labels = { '3/4': '¾', side: 'Side', front: 'Front', rear: 'Rear', top: 'Top' };
+  els.viewButtons.replaceChildren(...Object.keys(VIEWS).map((name) => {
+    const b = h('button', { type: 'button', textContent: labels[name], title: `${name === '3/4' ? 'Three-quarter' : labels[name]} view` });
+    b.addEventListener('click', () => viewer.setView(name));
+    return b;
+  }));
+  els.autoRotate.checked = viewer.autoRotate;
+  els.autoRotate.addEventListener('change', () => viewer.setAutoRotate(els.autoRotate.checked));
+  viewer.onAutoRotateChange((on) => { els.autoRotate.checked = on; });
+}
+els.viewModeBtn.addEventListener('click', () => setViewMode(viewMode === '3d' ? '2d' : '3d'));
+
 function refresh() {
   result = simulate(design);
   renderFigures();
   renderMarket();
   syncPanel();
-  drawPreview();
+  renderPreview();
   drawDyno();
   persist();
 }
@@ -573,4 +589,5 @@ if (document.fonts) document.fonts.ready.then(() => { drawPreview(); drawDyno();
 
 buildTabs();
 buildPanel();
+setViewMode(viewMode);
 setUnits(units);

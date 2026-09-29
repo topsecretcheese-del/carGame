@@ -1,0 +1,44 @@
+# Car Builder
+
+A car design game in the browser, inspired by *Automation: The Car Company Tycoon Game*.
+Pick a body, design the engine, set up the drivetrain and chassis, and see how the car
+performs and which buyers want it.
+
+## Play
+
+Open `index.html` in a browser. No build step or install needed.
+
+## What you can design
+
+- **Body:** style (hatchback, sedan, wagon, coupe, roadster, SUV, pickup), chassis material, paint.
+- **Engine:** cylinder layout, block material, valvetrain, fuel system, turbocharging and boost,
+  bore and stroke, compression, cam profile, rev limit.
+- **Drivetrain:** driven wheels, gearbox, final drive ratio.
+- **Chassis:** suspension type and stiffness, tyre compound, tyre width, wheel size, brakes.
+- **Interior:** trim level and safety equipment.
+
+## 3D viewer
+
+The car is shown in 3D (three.js, loaded from a CDN). Drag to rotate, scroll or pinch to zoom,
+or pick a camera angle. Body style, paint, wheel and tyre size, ride height, brakes, exhaust
+count and rear wing all update live. If WebGL isn't available it falls back to a 2D side drawing,
+which you can also switch to with the "2D drawing" button.
+
+## What it calculates
+
+- A dyno chart of power and torque across the rev range.
+- 0–100 km/h (or 0–60 mph), quarter mile, top speed, cornering grip, braking distance, fuel use,
+  weight, build cost and sticker price. Acceleration comes from a time-stepped simulation with
+  gearing, traction, weight transfer, drag and shift times.
+- Ratings (performance, comfort, economy, reliability and more) and how well the car fits each
+  market segment.
+- Warnings for engine knock, over-revving, and top speed being capped by the rev limiter.
+
+Designs can be saved to the garage, which is kept in the browser's local storage.
+
+## Code layout
+
+- `js/data.js`: parts catalogue and market segments. Tweak numbers here to rebalance.
+- `js/sim.js`: engine model, performance simulation and ratings.
+- `js/viewer3d.js`: the 3D car viewer.
+- `js/app.js`: controls, 2D preview, dyno chart and garage.
