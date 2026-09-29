@@ -133,7 +133,7 @@
   return g;
 }const player={x:RX,z:-2.4,yaw:0,speed:0,lap:1,progress:0,last:0,elapsed:0,lapStart:0,best:null,finished:false,gear:0,shiftTimer:0,rpm:0,accel:0};let playerMesh,ai=[],state='countdown',countStart=performance.now();const keys={throttle:false,brake:false,left:false,right:false};function ang(x,z){let a=Math.atan2(z/RZ,x/RX);return a<0?a+Math.PI*2:a}function delta(a,b){let d=a-b;while(d>Math.PI)d-=Math.PI*2;while(d<-Math.PI)d+=Math.PI*2;return d}function phys(){
   const body=BODIES[design.body],box=GEARBOXES[design.gearbox],tire=TIRES[design.tires];
-  const eff=box.eff*(design.drivetrain==='awd'?.95:1);
+  const eff=box.eff*(design.drivetrain==='awd' ? .95 : 1);
   const widthGrip=1+(design.tireWidth-205)/1000;
   const mu=tire.mu*widthGrip;
   const rr=tire.rr*(1+(design.tireWidth-205)/800);
@@ -151,7 +151,7 @@ function engineRpmFor(speed,gear){
 }
 function tractionLimit(accel){
   const shift=.12*(accel/9.81);
-  const share=design.drivetrain==='awd'?1:design.drivetrain==='fwd'?.6-shift:.46+shift;
+  const share=design.drivetrain==='awd'?1:design.drivetrain==='fwd' ? .6-shift : .46+shift;
   return P.mu*spec.mass*9.81*Math.max(.3,Math.min(1,share));
 }
 function roadResistance(speed){
