@@ -39,9 +39,15 @@ which you can also switch to with the "2D drawing" button.
 
 Designs can be saved to the garage, which is kept in the browser's local storage.
 
+## Race mode
+
+Open `race.html` or press **Race this car** in the builder. Race the current design or a saved garage car against five AI opponents over three laps. The race uses the builder simulation for horsepower, mass, top speed, drivetrain launch behaviour, tyre/suspension grip and braking. Keyboard and touch controls are supported.
+
 ## Code layout
 
 - `js/data.js`: parts catalogue and market segments. Tweak numbers here to rebalance.
 - `js/sim.js`: engine model, performance simulation and ratings.
 - `js/viewer3d.js`: the 3D car viewer.
 - `js/app.js`: controls, 2D preview, dyno chart and garage.
+- `js/race.js`: browser race simulation and AI opponents.
+- `race.html` / `race.css`: race mode UI and styling.
