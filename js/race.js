@@ -15,7 +15,7 @@
   const box=(x,y,z,sx,sy,sz,mat,parent=g)=>add(new THREE.BoxGeometry(sx,sy,sz),mat,x,y,z,parent);
   const shellY=r+.28;
   const shell=box(0,shellY,0,len*.78,.5,width,paint);
-  const cabinLen=len*(d.body==='pickup'?.28:d.body==='wagon'||d.body==='suv'||d.body==='hatch'?.48:d.body==='roadster'?.12:.4);
+  const cabinLen=len*(d.body==='pickup' ? .28 :d.body==='wagon'||d.body==='suv'||d.body==='hatch' ? .48 :d.body==='roadster' ? .12 : .4);
   if(d.body!=='roadster'){
     const cabin=box(d.body==='pickup'?len*.1:-len*.02,r+.68,0,cabinLen,p.height*.48,width*.82,glass);
     cabin.castShadow=true;
@@ -87,9 +87,9 @@
     if(d.spoiler==='lip')box(rearX-.02,shellY+.29,0,.16,.04,width*.72,paint);
     else if(d.spoiler==='ducktail'){const sp=box(rearX-.03,shellY+.33,0,.24,.08,width*.76,paint);sp.rotation.z=.18}
     else{
-      const big=d.spoiler==='bigWing',h=big?.42:.28,span=width*(big?1:.9);
+      const big=d.spoiler==='bigWing',h=big ? .42 : .28,span=width*(big?1:.9);
       for(const z of[-width*.28,width*.28])box(rearX+.08,shellY+.32+h/2,z,.06,h,.04,dark);
-      box(rearX+.03,shellY+.32+h,0,big?.4:.32,.045,span,dark);
+      box(rearX+.03,shellY+.32+h,0,big ? .4 : .32,.045,span,dark);
       if(big)for(const z of[-span/2,span/2])box(rearX+.03,shellY+.32+h,z,.42,.15,.025,dark);
     }
   }
@@ -120,7 +120,7 @@
     }else{
       const n=d.wheelStyle==='multiSpoke'?10:d.wheelStyle==='mesh'?12:5;
       for(let k=0;k<n;k++){
-        const a=k/n*Math.PI*2,sp=box(Math.cos(a)*rimR*.42,Math.sin(a)*rimR*.42,face,rimR*.75,d.wheelStyle==='multiSpoke'||d.wheelStyle==='mesh'?.026:.045,.025,rimMat,wg);
+        const a=k/n*Math.PI*2,sp=box(Math.cos(a)*rimR*.42,Math.sin(a)*rimR*.42,face,rimR*.75,(d.wheelStyle==='multiSpoke'||d.wheelStyle==='mesh') ? .026 : .045,.025,rimMat,wg);
         sp.rotation.z=a;
         if(d.wheelStyle==='mesh'){const sp2=sp.clone();sp2.rotation.z=a+.35;wg.add(sp2)}
       }
