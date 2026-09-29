@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RaceTrack Circuit · Car Builder</title>
+  <link rel="stylesheet" href="racetrack.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <small>CAR BUILDER · RACETRACK CIRCUIT</small>
+      <h1>RaceTrack Circuit</h1>
+    </div>
+    <nav>
+      <a href="index.html">Builder</a>
+      <a href="race.html">Oval race</a>
+      <button id="restart">Restart</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="stage">
+      <div id="game"></div>
+      <div id="countdown" class="countdown">3</div>
+      <div class="hud">
+        <b id="position">1 / 6</b>
+        <b id="lap">Lap 1 / 3</b>
+        <b id="speed">0 km/h</b>
+        <b id="gear">G 1</b>
+        <b id="rpm">0 rpm</b>
+        <b id="time">0:00.000</b>
+      </div>
+      <div id="result" class="result" hidden></div>
+    </section>
+
+    <aside>
+      <h2 id="car-name">Current design</h2>
+      <p id="car-spec"></p>
+      <div id="stats" class="stats"></div>
+      <p class="help">W / ↑ accelerate · S / ↓ brake/reverse · A/D or ←/→ steer · R restart</p>
+      <p class="help">This is a separate circuit game, but it uses your current Car Builder design and simulation values.</p>
+    </aside>
+  </main>
+
+  <div class="touch">
+    <button data-k="left">◀</button>
+    <button data-k="brake">▼</button>
+    <button data-k="throttle">▲</button>
+    <button data-k="right">▶</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/sim.js"></script>
+  <script src="js/racetrack.js?v=20260929-0623"></script>
+</body>
+</html>
